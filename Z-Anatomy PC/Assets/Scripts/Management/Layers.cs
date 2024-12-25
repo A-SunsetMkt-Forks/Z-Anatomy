@@ -246,20 +246,23 @@ public class Layers : MonoBehaviour
 
     private IEnumerator SyncLayer(List<GameObject>[] layerObjects, Slider slider)
     {
+        if (slider == null || layerObjects == null)
+            yield break;
+
         int maxValue = 0;
-
         List<int> empties = new List<int>();
-
         yield return new WaitForEndOfFrame();
 
         //Foreach layer
         for (int i = 0; i < layerObjects.Length; i++)
         {
-            bool found = false;
+            if (layerObjects[i] == null)
+                continue;
 
+            bool found = false;
             foreach (var obj in layerObjects[i])
             {
-                if(obj.GetComponent<BodyPartVisibility>().isVisible)
+                if (obj != null && obj.GetComponent<BodyPartVisibility>()?.isVisible == true)
                 {
                     found = true;
                     maxValue = i + 1;
@@ -269,15 +272,10 @@ public class Layers : MonoBehaviour
 
             if (!found)
                 empties.Add(i);
-
         }
 
         yield return new WaitForEndOfFrame();
-
         slider.SetValueWithoutNotify(maxValue);
-       /* slider.value = maxValue;
-        slider.SetEmpties(empties);
-        slider.UpdateButtons(maxValue);*/
     }
 
     public void UpdateBones()
